@@ -46,26 +46,36 @@ def find_probabilities(runs, num_simulations)
     alternatives.each do |name, parameters|
       alpha = parameters[0]
       beta = parameters[1]
-      beta_distributions{name} = rand.beta(alpha, beta)
+      beta_draws[name] = rand.beta(alpha, beta)
     end
 
     # Find the winning alternative
     beta_draws.each do |name, draw|
-      if draw = beta_draws.values.max
+      if draw == beta_draws.values.max
         wins[name] = wins[name].nil? ? 1 : wins[name] + 1
       end
     end
   end
 
-  prob_a = a_wins / 1000.0
-  prob_b = b_wins / 1000.0
-  prob_tie = ties / 1000.0
+  probabilities = {}
 
-  # TODO - figure out what to return
+  wins.each do |name, num_wins|
+    probabilities[name] = num_wins / number_of_simulations.to_f
+  end
 
-  puts "\n\n----SIMPLE-RANDOM GEM----"
-  puts "Probability of A being the champion: #{prob_a.to_f*100}%"
-  puts "Probability of B being the champion: #{prob_b.to_f*100}%"
-  puts "Probability of a tie: #{prob_tie}%"
+  puts probabilities.inspect
+  return probabilities
 
+end
+
+runs = {}
+runs["a"] = [10, 100]
+runs["b"] = [5, 50]
+runs["c"] = [3, 8]
+runs["d"] = [1, 10]
+
+probabilities = find_probabilities(runs, 1000)
+
+probabilities.each do |name, probability|
+  puts "Probability of #{name} being the champion: #{probability.to_f*100}%"
 end
